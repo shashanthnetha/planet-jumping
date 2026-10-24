@@ -144,7 +144,7 @@ body:not(.intro-ready) .header,body:not(.intro-ready) .planet-list,body:not(.int
     <video id="mars-background" class="background is-visible" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/3c83091e-4046-4fd6-adbb-2edb728be79a.mp4" muted playsinline preload="auto"></video>
     <video id="earth-background" class="background" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/fc3ded42-e845-41f3-a830-5cab512d79cd.mp4" muted playsinline preload="auto"></video>
     <video id="venus-background" class="background" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/b30f64d9-1637-477a-83df-d0fc6461a422.mp4" muted playsinline preload="auto"></video>
-    <video id="jupiter-background" class="background" src="3-jupiter.mp4" muted playsinline loop preload="auto"></video>
+    <video id="jupiter-background" class="background" muted playsinline loop preload="auto"><source src="2-jupiter-v2.webm" type="video/webm"><source src="1-jupiter-v2.mp4" type="video/mp4"></video>
     <canvas id="scene-background" class="background" aria-hidden="true"></canvas>
   </div>
   <div class="preloader" id="preloader" aria-label="Loading">
@@ -210,7 +210,7 @@ var TO_EARTH = BASE + '/fc3ded42-e845-41f3-a830-5cab512d79cd.mp4';
 var TO_VENUS = BASE + '/b30f64d9-1637-477a-83df-d0fc6461a422.mp4';
 var TO_MARS  = BASE + '/5fc5651c-3b5d-4171-b507-87f7e635d1b4.mp4';
 var MERCURY  = BASE + '/d6fb8b6b-c15e-4aaa-9cf7-45bbb5e33372.jpg';
-var JUPITER_BG = '3-jupiter.mp4';
+var JUPITER_BG = '1-jupiter-v2.mp4';
 var LOGO     = BASE + '/eb7e0f53-50cd-4af5-abc4-8b9a52cdc01b.svg';
 
 var planets = ['Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune'];
@@ -633,10 +633,10 @@ function watchVideoOnce(store, key, video, onFail){
     done = true;
     onFail();
   }
-  video.addEventListener('error', fail);
+  if (video.id !== 'jupiter-background') video.addEventListener('error', fail);
   setTimeout(function(){
     if (video.error || video.readyState < 2) fail();
-  }, 4500);
+  }, video.id === 'jupiter-background' ? 15000 : 4500);
 }
 function watchBackground(key){
   var st = states[key];
@@ -893,6 +893,9 @@ function cursorLoop(){
 
 window.addEventListener('resize', function(){ resizeCanvas(); fitTitle(); });
 
+(function(){var jv=document.getElementById('jupiter-background');
+if(jv){jv.load();jv.addEventListener('canplay',function(){if(bgFailed.jupiter){bgFailed.jupiter=false;if(current==='jupiter')render();}});
+var errs=0;jv.addEventListener('error',function(){});var jl=jv.querySelectorAll('source');for(var k=0;k<jl.length;k++)jl[k].addEventListener('error',function(){if(++errs>=jl.length){bgFailed.jupiter=true;if(current==='jupiter')render();}});}})();
 var backgroundVideos = document.querySelectorAll('video.background');
 for (var i = 0; i < backgroundVideos.length; i++){
   backgroundVideos[i].pause();
