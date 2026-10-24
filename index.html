@@ -144,7 +144,7 @@ body:not(.intro-ready) .header,body:not(.intro-ready) .planet-list,body:not(.int
     <video id="mars-background" class="background is-visible" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/3c83091e-4046-4fd6-adbb-2edb728be79a.mp4" muted playsinline preload="auto"></video>
     <video id="earth-background" class="background" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/fc3ded42-e845-41f3-a830-5cab512d79cd.mp4" muted playsinline preload="auto"></video>
     <video id="venus-background" class="background" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/b30f64d9-1637-477a-83df-d0fc6461a422.mp4" muted playsinline preload="auto"></video>
-    <video id="jupiter-background" class="background" muted playsinline loop preload="auto"><source src="2-jupiter-v2.webm" type="video/webm"><source src="1-jupiter-v2.mp4" type="video/mp4"></video>
+    <video id="jupiter-background" class="background" muted playsinline preload="auto"><source src="2-jupiter-v2.webm" type="video/webm"><source src="1-jupiter-v2.mp4" type="video/mp4"></video>
     <canvas id="scene-background" class="background" aria-hidden="true"></canvas>
   </div>
   <div class="preloader" id="preloader" aria-label="Loading">
@@ -591,6 +591,7 @@ function render(){
   var jbg = document.getElementById('jupiter-background');
   if (jbg){
     if (activeBgId === 'jupiter-background'){
+      if (jbg.paused && (jbg.ended || jbg.currentTime > 0)) { try { jbg.currentTime = 0; } catch(e){} }
       var jplay = jbg.play();
       if (jplay && jplay.catch) jplay.catch(function(){});
     } else {
