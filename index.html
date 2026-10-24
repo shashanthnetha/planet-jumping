@@ -591,9 +591,7 @@ function render(){
   var jbg = document.getElementById('jupiter-background');
   if (jbg){
     if (activeBgId === 'jupiter-background'){
-      if (jbg.paused && (jbg.ended || jbg.currentTime > 0)) { try { jbg.currentTime = 0; } catch(e){} }
-      var jplay = jbg.play();
-      if (jplay && jplay.catch) jplay.catch(function(){});
+      holdJupiterEnd(jbg);
     } else {
       jbg.pause();
     }
@@ -613,6 +611,11 @@ function render(){
   fitTitle();
 }
 
+function holdJupiterEnd(v){
+  v.pause();
+  function seek(){ try { if (v.duration && isFinite(v.duration)) v.currentTime = Math.max(0, v.duration - 0.05); } catch(e){} }
+  if (v.readyState >= 1) seek(); else v.addEventListener('loadedmetadata', seek, { once:true });
+}
 function jumpTo(key){
   if (busy || key === current || !states[key]) return;
   busy = true;
