@@ -146,6 +146,8 @@ body:not(.intro-ready) .header,body:not(.intro-ready) .planet-list,body:not(.int
     <video id="venus-background" class="background" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/b30f64d9-1637-477a-83df-d0fc6461a422.mp4" muted playsinline preload="auto"></video>
     <video id="jupiter-background" class="background" muted playsinline preload="auto"><source src="2-jupiter-v2.webm" type="video/webm"><source src="1-jupiter-v2.mp4" type="video/mp4"></video>
     <video id="saturn-background" class="background" muted playsinline preload="auto"><source src="2-saturn-v2.webm" type="video/webm"><source src="1-saturn-v2.mp4" type="video/mp4"></video>
+    <video id="uranus-background" class="background" muted playsinline preload="auto"><source src="5-uranus-v2.webm" type="video/webm"><source src="4-uranus-v2.mp4" type="video/mp4"></video>
+    <video id="neptune-background" class="background" muted playsinline preload="auto"><source src="7-neptune-v2.webm" type="video/webm"><source src="6-neptune-v2.mp4" type="video/mp4"></video>
     <canvas id="scene-background" class="background" aria-hidden="true"></canvas>
   </div>
   <div class="preloader" id="preloader" aria-label="Loading">
@@ -213,6 +215,8 @@ var TO_MARS  = BASE + '/5fc5651c-3b5d-4171-b507-87f7e635d1b4.mp4';
 var MERCURY  = BASE + '/d6fb8b6b-c15e-4aaa-9cf7-45bbb5e33372.jpg';
 var JUPITER_BG = '1-jupiter-v2.mp4';
 var SATURN_BG  = '1-saturn-v2.mp4';
+var URANUS_BG  = '4-uranus-v2.mp4';
+var NEPTUNE_BG = '6-neptune-v2.mp4';
 var LOGO     = BASE + '/eb7e0f53-50cd-4af5-abc4-8b9a52cdc01b.svg';
 
 var planets = ['Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune'];
@@ -243,17 +247,17 @@ var states = {
            ['Year:','11.86 Earth years.'],
            ['Temperature:','Around -110 °C at the cloud tops.'],
            ['Atmosphere:','Mostly hydrogen and helium, home to the centuries-old Great Red Spot storm.']] },
-  saturn: { name:'Saturn', next:'Uranus', number:'[06]', portal:{type:'scene', key:'uranus'}, background:{type:'video', id:'saturn-background'},
+  saturn: { name:'Saturn', next:'Uranus', number:'[06]', portal:{type:'video', src:URANUS_BG}, background:{type:'video', id:'saturn-background'},
     facts:[['Distance:','1.43 billion km (9.5 astronomical units).'],
            ['Year:','29.4 Earth years.'],
            ['Temperature:','Around -140 °C.'],
            ['Atmosphere:','Hydrogen and helium, circled by bright rings of ice and rock.']] },
-  uranus: { name:'Uranus', next:'Neptune', number:'[07]', portal:{type:'scene', key:'neptune'}, background:{type:'scene', key:'uranus'},
+  uranus: { name:'Uranus', next:'Neptune', number:'[07]', portal:{type:'video', src:NEPTUNE_BG}, background:{type:'video', id:'uranus-background'},
     facts:[['Distance:','2.87 billion km (19.2 astronomical units).'],
            ['Year:','84 Earth years.'],
            ['Temperature:','Around -195 °C, the coldest planetary atmosphere.'],
            ['Atmosphere:','Hydrogen, helium and methane; the planet rotates on its side.']] },
-  neptune: { name:'Neptune', next:null, number:'[08]', portal:null, background:{type:'scene', key:'neptune'},
+  neptune: { name:'Neptune', next:null, number:'[08]', portal:null, background:{type:'video', id:'neptune-background'},
     facts:[['Distance:','4.5 billion km (30 astronomical units).'],
            ['Year:','164.8 Earth years.'],
            ['Temperature:','Around -200 °C.'],
@@ -590,7 +594,7 @@ function render(){
   for (var b = 0; b < backgrounds.length; b++){
     backgrounds[b].classList.toggle('is-visible', backgrounds[b].id === activeBgId);
   }
-  var heldBgs = ['jupiter-background', 'saturn-background'];
+  var heldBgs = ['jupiter-background', 'saturn-background', 'uranus-background', 'neptune-background'];
   for (var hb = 0; hb < heldBgs.length; hb++){
     var heldV = document.getElementById(heldBgs[hb]);
     if (heldV){
@@ -639,10 +643,10 @@ function watchVideoOnce(store, key, video, onFail){
     done = true;
     onFail();
   }
-  if (video.id !== 'jupiter-background' && video.id !== 'saturn-background') video.addEventListener('error', fail);
+  if (['jupiter-background','saturn-background','uranus-background','neptune-background'].indexOf(video.id) < 0) video.addEventListener('error', fail);
   setTimeout(function(){
     if (video.error || video.readyState < 2) fail();
-  }, (video.id === 'jupiter-background' || video.id === 'saturn-background') ? 15000 : 4500);
+  }, (['jupiter-background','saturn-background','uranus-background','neptune-background'].indexOf(video.id) >= 0) ? 15000 : 4500);
 }
 function watchBackground(key){
   var st = states[key];
@@ -905,6 +909,12 @@ var errs=0;jv.addEventListener('error',function(){});var jl=jv.querySelectorAll(
 (function(){var sv=document.getElementById('saturn-background');
 if(sv){sv.load();sv.addEventListener('canplay',function(){if(bgFailed.saturn){bgFailed.saturn=false;if(current==='saturn')render();}});
 var serrs=0;sv.addEventListener('error',function(){});var sl=sv.querySelectorAll('source');for(var k=0;k<sl.length;k++)sl[k].addEventListener('error',function(){if(++serrs>=sl.length){bgFailed.saturn=true;if(current==='saturn')render();}});}})();
+(function(){var uv=document.getElementById('uranus-background');
+if(uv){uv.load();uv.addEventListener('canplay',function(){if(bgFailed.uranus){bgFailed.uranus=false;if(current==='uranus')render();}});
+var uerrs=0;uv.addEventListener('error',function(){});var ul=uv.querySelectorAll('source');for(var k=0;k<ul.length;k++)ul[k].addEventListener('error',function(){if(++uerrs>=ul.length){bgFailed.uranus=true;if(current==='uranus')render();}});}})();
+(function(){var nv=document.getElementById('neptune-background');
+if(nv){nv.load();nv.addEventListener('canplay',function(){if(bgFailed.neptune){bgFailed.neptune=false;if(current==='neptune')render();}});
+var nerrs=0;nv.addEventListener('error',function(){});var nl=nv.querySelectorAll('source');for(var k=0;k<nl.length;k++)nl[k].addEventListener('error',function(){if(++nerrs>=nl.length){bgFailed.neptune=true;if(current==='neptune')render();}});}})();
 var backgroundVideos = document.querySelectorAll('video.background');
 for (var i = 0; i < backgroundVideos.length; i++){
   backgroundVideos[i].pause();
