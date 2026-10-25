@@ -145,6 +145,7 @@ body:not(.intro-ready) .header,body:not(.intro-ready) .planet-list,body:not(.int
     <video id="earth-background" class="background" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/fc3ded42-e845-41f3-a830-5cab512d79cd.mp4" muted playsinline preload="auto"></video>
     <video id="venus-background" class="background" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/b30f64d9-1637-477a-83df-d0fc6461a422.mp4" muted playsinline preload="auto"></video>
     <video id="jupiter-background" class="background" muted playsinline preload="auto"><source src="2-jupiter-v2.webm" type="video/webm"><source src="1-jupiter-v2.mp4" type="video/mp4"></video>
+    <video id="saturn-background" class="background" muted playsinline preload="auto"><source src="2-saturn-v2.webm" type="video/webm"><source src="1-saturn-v2.mp4" type="video/mp4"></video>
     <canvas id="scene-background" class="background" aria-hidden="true"></canvas>
   </div>
   <div class="preloader" id="preloader" aria-label="Loading">
@@ -211,6 +212,7 @@ var TO_VENUS = BASE + '/b30f64d9-1637-477a-83df-d0fc6461a422.mp4';
 var TO_MARS  = BASE + '/5fc5651c-3b5d-4171-b507-87f7e635d1b4.mp4';
 var MERCURY  = BASE + '/d6fb8b6b-c15e-4aaa-9cf7-45bbb5e33372.jpg';
 var JUPITER_BG = '1-jupiter-v2.mp4';
+var SATURN_BG  = '1-saturn-v2.mp4';
 var LOGO     = BASE + '/eb7e0f53-50cd-4af5-abc4-8b9a52cdc01b.svg';
 
 var planets = ['Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune'];
@@ -236,12 +238,12 @@ var states = {
            ['Year:','One Martian year is equal to 687 Earth days.'],
            ['Temperature:','Around -60 °C, dropping to -125 °C at the poles in winter.'],
            ['Atmosphere:','Very thin, consisting of 95% carbon dioxide, with frequent dust storms.']] },
-  jupiter: { name:'Jupiter', next:'Saturn', number:'[05]', portal:{type:'scene', key:'saturn'}, background:{type:'video', id:'jupiter-background'},
+  jupiter: { name:'Jupiter', next:'Saturn', number:'[05]', portal:{type:'video', src:SATURN_BG}, background:{type:'video', id:'jupiter-background'},
     facts:[['Distance:','778.5 million km (5.2 astronomical units).'],
            ['Year:','11.86 Earth years.'],
            ['Temperature:','Around -110 °C at the cloud tops.'],
            ['Atmosphere:','Mostly hydrogen and helium, home to the centuries-old Great Red Spot storm.']] },
-  saturn: { name:'Saturn', next:'Uranus', number:'[06]', portal:{type:'scene', key:'uranus'}, background:{type:'scene', key:'saturn'},
+  saturn: { name:'Saturn', next:'Uranus', number:'[06]', portal:{type:'scene', key:'uranus'}, background:{type:'video', id:'saturn-background'},
     facts:[['Distance:','1.43 billion km (9.5 astronomical units).'],
            ['Year:','29.4 Earth years.'],
            ['Temperature:','Around -140 °C.'],
@@ -588,12 +590,12 @@ function render(){
   for (var b = 0; b < backgrounds.length; b++){
     backgrounds[b].classList.toggle('is-visible', backgrounds[b].id === activeBgId);
   }
-  var jbg = document.getElementById('jupiter-background');
-  if (jbg){
-    if (activeBgId === 'jupiter-background'){
-      holdJupiterEnd(jbg);
-    } else {
-      jbg.pause();
+  var heldBgs = ['jupiter-background', 'saturn-background'];
+  for (var hb = 0; hb < heldBgs.length; hb++){
+    var heldV = document.getElementById(heldBgs[hb]);
+    if (heldV){
+      if (activeBgId === heldBgs[hb]) holdJupiterEnd(heldV);
+      else heldV.pause();
     }
   }
 
@@ -637,10 +639,10 @@ function watchVideoOnce(store, key, video, onFail){
     done = true;
     onFail();
   }
-  if (video.id !== 'jupiter-background') video.addEventListener('error', fail);
+  if (video.id !== 'jupiter-background' && video.id !== 'saturn-background') video.addEventListener('error', fail);
   setTimeout(function(){
     if (video.error || video.readyState < 2) fail();
-  }, video.id === 'jupiter-background' ? 15000 : 4500);
+  }, (video.id === 'jupiter-background' || video.id === 'saturn-background') ? 15000 : 4500);
 }
 function watchBackground(key){
   var st = states[key];
@@ -900,6 +902,9 @@ window.addEventListener('resize', function(){ resizeCanvas(); fitTitle(); });
 (function(){var jv=document.getElementById('jupiter-background');
 if(jv){jv.load();jv.addEventListener('canplay',function(){if(bgFailed.jupiter){bgFailed.jupiter=false;if(current==='jupiter')render();}});
 var errs=0;jv.addEventListener('error',function(){});var jl=jv.querySelectorAll('source');for(var k=0;k<jl.length;k++)jl[k].addEventListener('error',function(){if(++errs>=jl.length){bgFailed.jupiter=true;if(current==='jupiter')render();}});}})();
+(function(){var sv=document.getElementById('saturn-background');
+if(sv){sv.load();sv.addEventListener('canplay',function(){if(bgFailed.saturn){bgFailed.saturn=false;if(current==='saturn')render();}});
+var serrs=0;sv.addEventListener('error',function(){});var sl=sv.querySelectorAll('source');for(var k=0;k<sl.length;k++)sl[k].addEventListener('error',function(){if(++serrs>=sl.length){bgFailed.saturn=true;if(current==='saturn')render();}});}})();
 var backgroundVideos = document.querySelectorAll('video.background');
 for (var i = 0; i < backgroundVideos.length; i++){
   backgroundVideos[i].pause();
